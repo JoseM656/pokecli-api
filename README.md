@@ -2,7 +2,7 @@
 
 A REST API that acts as a caching proxy for [PokéAPI](https://pokeapi.co). On the first request, data is fetched from PokéAPI and stored in MongoDB. Subsequent requests are served from the local cache.
 
-Built as the backend for [pokemon-cli](https://github.com/tuusuario/pokemon-cli).
+Built as the backend for [pokemon-cli](https://github.com//pokemon-cli).
 
 ## Stack
 
