@@ -1,15 +1,26 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/JoseM656/pokecli-api/internal/pokeapi"
 )
 
 func main() {
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, `{"status": "ok"}`)
-	})
+	client := pokeapi.NewClient("https://pokeapi.co/api/v2")
 
-	fmt.Println("Server running on :8080")
-	http.ListenAndServe(":8080", nil)
+	raw, err := client.FetchPokemon(context.Background(), "pikachu")
+	if err != nil {
+		panic(err)
+	}
+
+	pokemon, err := client.Map(context.Background(), raw)
+	if err != nil {
+		panic(err)
+	}
+
+	out, _ := json.MarshalIndent(pokemon, "", "  ")
+	fmt.Println(string(out))
 }
