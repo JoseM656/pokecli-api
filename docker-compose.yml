@@ -11,6 +11,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: pokecli-api:0.1-foundation
+    container_name: pokecli-api-service
     restart: unless-stopped
     ports:
       - "8080:8080"
