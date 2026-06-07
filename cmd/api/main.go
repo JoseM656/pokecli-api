@@ -2,25 +2,50 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 
+	"github.com/JoseM656/pokecli-api/config"
+	"github.com/JoseM656/pokecli-api/internal/cache"
+	"github.com/JoseM656/pokecli-api/internal/handler"
 	"github.com/JoseM656/pokecli-api/internal/pokeapi"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
-	client := pokeapi.NewClient("https://pokeapi.co/api/v2")
+	// Config
+	cfg := config.Load()
 
-	raw, err := client.FetchPokemon(context.Background(), "pikachu")
+	// MongoDB
+	mongoClient, err := cache.Connect(context.Background(), cfg.MongoURI)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to connect to mongodb: %v", err)
 	}
+	defer mongoClient.Disconnect(context.Background())
 
-	pokemon, err := client.Map(context.Background(), raw)
-	if err != nil {
-		panic(err)
+	// Dependencies
+	repo := cache.NewMongoRepository(mongoClient, cfg.MongoDBName)
+	pokeClient := pokeapi.NewClient(cfg.PokeAPIURL)
+	pokemonHandler := handler.NewPokemonHandler(repo, pokeClient)
+
+	// Router
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, `{"status": "ok"}`)
+	})
+
+	r.Get("/pokemon/{name}", pokemonHandler.Get)
+
+	// Server
+	addr := fmt.Sprintf(":%s", cfg.Port)
+	log.Printf("Server running on %s", addr)
+	if err := http.ListenAndServe(addr, r); err != nil {
+		log.Fatalf("server error: %v", err)
 	}
-
-	out, _ := json.MarshalIndent(pokemon, "", "  ")
-	fmt.Println(string(out))
 }
