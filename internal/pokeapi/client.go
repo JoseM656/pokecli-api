@@ -104,3 +104,18 @@ func fetch[T any](ctx context.Context, client *http.Client, url string) (*T, err
 
 	return &result, nil
 }
+
+// Additional call to handle Pokemon names in different languages.
+type rawSpecies struct {
+	Names []struct {
+		Name     string `json:"name"`
+		Language struct {
+			Name string `json:"name"`
+		} `json:"language"`
+	} `json:"names"`
+}
+
+func (c *Client) FetchSpecies(ctx context.Context, name string) (*rawSpecies, error) {
+	url := fmt.Sprintf("%s/pokemon-species/%s", c.baseURL, strings.ToLower(name))
+	return fetch[rawSpecies](ctx, c.httpClient, url)
+}
