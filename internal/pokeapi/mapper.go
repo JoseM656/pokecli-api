@@ -41,9 +41,17 @@ func (c *Client) Map(ctx context.Context, raw *rawPokemon) (*model.Pokemon, erro
 		return nil, err
 	}
 
+	// Fetch localized names from species endpoint
+	species, err := c.FetchSpecies(ctx, raw.Name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch species: %w", err)
+	}
+
+	name := extractNames(&rawNames{Names: species.Names})
+
 	return &model.Pokemon{
 		ID:        raw.ID,
-		Name:      model.LocalizedName{EN: raw.Name},
+		Name:      name,
 		Types:     types,
 		Abilities: abilities,
 		Stats:     mapStats(raw),
