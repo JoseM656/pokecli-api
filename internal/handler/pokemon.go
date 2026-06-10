@@ -3,13 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/JoseM656/pokecli-api/internal/cache"
 	"github.com/JoseM656/pokecli-api/internal/pokeapi"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/JoseM656/pokecli-api/internal/model"
 )
 
 // PokemonHandler handles HTTP requests for Pokemon data.
@@ -45,7 +46,7 @@ func (h *PokemonHandler) Get(w http.ResponseWriter, r *http.Request) {
 	if pokemon == nil {
 		raw, err := h.client.FetchPokemon(r.Context(), name)
 		if err != nil {
-			if errors.Is(err, fmt.Errorf("not found: ")) {
+			if errors.Is(err, model.ErrPokemonNotFound) {
 				respondError(w, http.StatusNotFound, "pokemon not found")
 				return
 			}

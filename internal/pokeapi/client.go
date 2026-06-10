@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/JoseM656/pokecli-api/internal/model"
 )
 
 // Raw structs — PokeAPI response model.
@@ -90,9 +92,11 @@ func fetch[T any](ctx context.Context, client *http.Client, url string) (*T, err
 	}
 	defer resp.Body.Close()
 
+	// Imports model of error using sentinal domain-level handling.
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("not found: %s", url)
+		return nil, model.ErrPokemonNotFound
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status %d: %s", resp.StatusCode, url)
 	}
