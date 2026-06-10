@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: pokecli-api:0.6-core
+    image: pokecli-api:0.7-core
     container_name: pokecli-api-service
     restart: unless-stopped
     ports:
