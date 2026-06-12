@@ -47,7 +47,10 @@ func (h *PokemonHandler) Get(w http.ResponseWriter, r *http.Request) {
 		raw, err := h.client.FetchPokemon(r.Context(), name)
 		if err != nil {
 			if errors.Is(err, model.ErrPokemonNotFound) {
-				respondError(w, http.StatusNotFound, "pokemon not found")
+				respondJSON(w, http.StatusNotFound, map[string]string{
+					"error": "pokemon not found",
+					"hint":  "try the English name, e.g. /pokemon/pikachu",
+				})
 				return
 			}
 			respondError(w, http.StatusInternalServerError, "failed to fetch pokemon")

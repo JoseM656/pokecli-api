@@ -26,9 +26,12 @@ func main() {
 	defer mongoClient.Disconnect(context.Background())
 
 	// Dependencies
-	repo := cache.NewMongoRepository(mongoClient, cfg.MongoDBName)
+	pokeRepo := cache.NewMongoRepository(mongoClient, cfg.MongoDBName)
+	moveRepo := cache.NewMongoMoveRepository(mongoClient, cfg.MongoDBName)
 	pokeClient := pokeapi.NewClient(cfg.PokeAPIURL)
-	pokemonHandler := handler.NewPokemonHandler(repo, pokeClient)
+
+	pokemonHandler := handler.NewPokemonHandler(pokeRepo, pokeClient)
+	moveHandler := handler.NewMoveHandler(moveRepo, pokeClient)
 
 	// Router
 	r := chi.NewRouter()
@@ -41,6 +44,7 @@ func main() {
 	})
 
 	r.Get("/pokemon/{name}", pokemonHandler.Get)
+	r.Get("/move/{name}", moveHandler.Get)
 
 	// Server
 	addr := fmt.Sprintf(":%s", cfg.Port)
