@@ -3,6 +3,7 @@ package pokeapi
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/JoseM656/pokecli-api/internal/model"
 )
@@ -163,23 +164,24 @@ func extractNames(raw *rawNames) model.LocalizedName {
 	localized := model.LocalizedName{}
 
 	for _, n := range raw.Names {
+		name := strings.ToLower(n.Name)
 		switch n.Language.Name {
 		case "es":
-			localized.ES = n.Name
+			localized.ES = name
 		case "en":
-			localized.EN = n.Name
+			localized.EN = name
 		case "ja":
-			localized.JA = n.Name
+			localized.JA = name
 		case "fr":
-			localized.FR = n.Name
+			localized.FR = name
 		case "de":
-			localized.DE = n.Name
+			localized.DE = name
 		case "ko":
-			localized.KO = n.Name
+			localized.KO = name
 		case "it":
-			localized.IT = n.Name
+			localized.IT = name
 		case "zh-Hans":
-			localized.ZH = n.Name
+			localized.ZH = name
 		}
 	}
 
