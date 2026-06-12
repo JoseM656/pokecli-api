@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/JoseM656/pokecli-api/internal/model"
@@ -45,7 +46,18 @@ func Connect(ctx context.Context, uri string) (*mongo.Client, error) {
 // GetByName looks up a Pokemon by name in the cache.
 // Returns nil, nil if the Pokemon is not cached yet.
 func (r *MongoRepository) GetByName(ctx context.Context, name string) (*model.Pokemon, error) {
-	filter := bson.M{"name.en": name}
+	normalized := strings.ToLower(name)
+	filter := bson.M{
+		"$or": []bson.M{
+			{"name.en": normalized},
+			{"name.es": normalized},
+			{"name.ja": normalized},
+			{"name.fr": normalized},
+			{"name.de": normalized},
+			{"name.ko": normalized},
+			{"name.it": normalized},
+		},
+	}
 
 	var pokemon model.Pokemon
 	err := r.collection.FindOne(ctx, filter).Decode(&pokemon)
@@ -68,6 +80,61 @@ func (r *MongoRepository) Save(ctx context.Context, pokemon *model.Pokemon) erro
 	_, err := r.collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		return fmt.Errorf("failed to save pokemon to cache: %w", err)
+	}
+
+	return nil
+}
+
+// MOVE --- ZONE
+
+// MongoMoveRepository implements MoveRepository using MongoDB.
+type MongoMoveRepository struct {
+	collection *mongo.Collection
+}
+
+// NewMongoMoveRepository creates a new MongoMoveRepository.
+func NewMongoMoveRepository(client *mongo.Client, dbName string) *MongoMoveRepository {
+	collection := client.Database(dbName).Collection("moves")
+	return &MongoMoveRepository{collection: collection}
+}
+
+// GetMoveByName looks up a Move by name in the cache.
+// Returns nil, nil if the Move is not cached yet.
+func (r *MongoMoveRepository) GetMoveByName(ctx context.Context, name string) (*model.Move, error) {
+	normalized := strings.ToLower(name)
+	filter := bson.M{
+		"$or": []bson.M{
+			{"name.en": normalized},
+			{"name.es": normalized},
+			{"name.ja": normalized},
+			{"name.fr": normalized},
+			{"name.de": normalized},
+			{"name.ko": normalized},
+			{"name.it": normalized},
+		},
+	}
+
+	var move model.Move
+	err := r.collection.FindOne(ctx, filter).Decode(&move)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to get move from cache: %w", err)
+	}
+
+	return &move, nil
+}
+
+// SaveMove stores a Move in the cache.
+func (r *MongoMoveRepository) SaveMove(ctx context.Context, move *model.Move) error {
+	filter := bson.M{"name.en": move.Name.EN}
+	update := bson.M{"$set": move}
+	opts := options.Update().SetUpsert(true)
+
+	_, err := r.collection.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return fmt.Errorf("failed to save move to cache: %w", err)
 	}
 
 	return nil

@@ -29,6 +29,13 @@ var typeColors = map[string]string{
 	"fairy":    "#FDB9E9",
 }
 
+// categoryColors maps PokeAPI damage class names to display hex colors.
+var categoryColors = map[string]string{
+	"physical": "#8B1A1A",
+	"special":  "#1A4B8C",
+	"status":   "#4A4A4A",
+}
+
 // Map maps a rawPokemon and its localized data in the model.
 func (c *Client) Map(ctx context.Context, raw *rawPokemon) (*model.Pokemon, error) {
 	types, err := c.mapTypes(ctx, raw)
@@ -121,6 +128,34 @@ func mapStats(raw *rawPokemon) model.PokemonStats {
 	}
 
 	return stats
+}
+
+// MapMove maps a rawMove into model.
+func (c *Client) MapMove(ctx context.Context, raw *rawMove) (*model.Move, error) {
+	typeNames, err := c.FetchType(ctx, raw.Type.URL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch move type: %w", err)
+	}
+
+	color, ok := categoryColors[raw.DamageClass.Name]
+	if !ok {
+		color = "#4A4A4A"
+	}
+
+	return &model.Move{
+		Name: extractNames(&rawNames{Names: raw.Names}),
+		Type: model.PokemonType{
+			Name:  extractNames(typeNames),
+			Color: typeColors[raw.Type.Name],
+		},
+		Category: model.MoveCategory{
+			Name:  raw.DamageClass.Name,
+			Color: color,
+		},
+		Power:    raw.Power,
+		Accuracy: raw.Accuracy,
+		PP:       raw.PP,
+	}, nil
 }
 
 // extractNames builds a LocalizedName from a rawNames response.

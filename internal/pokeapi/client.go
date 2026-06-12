@@ -3,6 +3,7 @@ package pokeapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -122,4 +123,38 @@ type rawSpecies struct {
 func (c *Client) FetchSpecies(ctx context.Context, name string) (*rawSpecies, error) {
 	url := fmt.Sprintf("%s/pokemon-species/%s", c.baseURL, strings.ToLower(name))
 	return fetch[rawSpecies](ctx, c.httpClient, url)
+}
+
+// MOVE --- ZONE
+
+type rawMove struct {
+	Name  string `json:"name"`
+	Names []struct {
+		Name     string `json:"name"`
+		Language struct {
+			Name string `json:"name"`
+		} `json:"language"`
+	} `json:"names"`
+	Type struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"type"`
+	DamageClass struct {
+		Name string `json:"name"`
+	} `json:"damage_class"`
+	Power    int `json:"power"`
+	Accuracy int `json:"accuracy"`
+	PP       int `json:"pp"`
+}
+
+func (c *Client) FetchMove(ctx context.Context, name string) (*rawMove, error) {
+	url := fmt.Sprintf("%s/move/%s", c.baseURL, strings.ToLower(name))
+	raw, err := fetch[rawMove](ctx, c.httpClient, url)
+	if err != nil {
+		if errors.Is(err, model.ErrPokemonNotFound) {
+			return nil, model.ErrMoveNotFound
+		}
+		return nil, err
+	}
+	return raw, nil
 }
