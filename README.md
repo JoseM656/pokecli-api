@@ -1,7 +1,6 @@
 # pokemon-api
 
-A REST API that acts as a caching proxy for [PokéAPI](https://pokeapi.co). On the first request, data is fetched from PokéAPI and stored in MongoDB. Subsequent requests are served from the local cache.
-
+A caching proxy written in Go that sits between a CLI client and [PokéAPI](https://pokeapi.co). It has no business logic of its own — on the first request, data is fetched from PokéAPI and stored in MongoDB. Subsequent requests are served from the local cache without hitting the upstream API.
 
 ## Stack
 
@@ -11,7 +10,7 @@ A REST API that acts as a caching proxy for [PokéAPI](https://pokeapi.co). On t
 
 ## Endpoints
 
-```
+``` http
 GET /pokemon/:name?lang=es
 ```
 
@@ -42,3 +41,15 @@ Returns a projected JSON with the Pokemon's name, types, abilities, base stats, 
 | HTTP router | `github.com/go-chi/chi/v5` |
 | MongoDB driver | `go.mongodb.org/mongo-driver` |
 | Environment variables | `github.com/joho/godotenv` |
+
+## Known Limitations
+
+- **First request must be in English** — pokemon and move names are fetched from PokéAPI using the English name as the canonical identifier. Subsequent requests can use any supported language, as the cache stores all available translations.
+
+- **Supported languages** — translations are available for: Spanish (`es`), English (`en`), Japanese (`ja`), French (`fr`), German (`de`), Korean (`ko`), Italian (`it`), and Chinese Simplified (`zh`).
+
+## Planned for v2.0
+
+- **Redis cache layer** — add Redis as a fast in-memory cache in front of MongoDB to reduce latency on repeated requests.
+- **ASCII sprites** — convert pokemon sprite images to ASCII art server-side and include them in the API response, so CLI clients can render them without additional processing.
+- **Extended endpoints** — expose additional PokéAPI resources such as items, species, and evolutions.
