@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/JoseM656/pokecli-api/internal/model"
+	"github.com/pokeservicies/pokeproxy/internal/model"
 )
 
 // typeColors maps PokeAPI type names to their display hex colors.

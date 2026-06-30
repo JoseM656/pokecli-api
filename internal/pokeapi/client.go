@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JoseM656/pokecli-api/internal/model"
+	"github.com/pokeservicies/pokeproxy/internal/model"
 )
 
 // Raw structs — PokeAPI response model.

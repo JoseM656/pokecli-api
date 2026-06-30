@@ -1,4 +1,4 @@
-module github.com/JoseM656/pokecli-api
+module github.com/pokeservicies/pokeproxy
 
 go 1.23.3
 

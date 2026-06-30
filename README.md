@@ -1,4 +1,4 @@
-# pokemon-api
+# pokeproxy
 
 A caching proxy written in Go that sits between a CLI client and [PokéAPI](https://pokeapi.co). It has no business logic of its own — on the first request, data is fetched from PokéAPI and stored in MongoDB. Subsequent requests are served from the local cache without hitting the upstream API.
 

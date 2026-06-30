@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JoseM656/pokecli-api/internal/model"
+	"github.com/pokeservicies/pokeproxy/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
