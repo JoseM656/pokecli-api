@@ -6,10 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/JoseM656/pokecli-api/config"
-	"github.com/JoseM656/pokecli-api/internal/cache"
-	"github.com/JoseM656/pokecli-api/internal/handler"
-	"github.com/JoseM656/pokecli-api/internal/pokeapi"
+	"github.com/pokeservicies/pokeproxy/config"
+	"github.com/pokeservicies/pokeproxy/internal/cache"
+	"github.com/pokeservicies/pokeproxy/internal/handler"
+	"github.com/pokeservicies/pokeproxy/internal/pokeapi"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/JoseM656/pokecli-api/internal/cache"
-	"github.com/JoseM656/pokecli-api/internal/model"
-	"github.com/JoseM656/pokecli-api/internal/pokeapi"
+	"github.com/pokeservicies/pokeproxy/internal/cache"
+	"github.com/pokeservicies/pokeproxy/internal/model"
+	"github.com/pokeservicies/pokeproxy/internal/pokeapi"
 	"github.com/go-chi/chi/v5"
 )
 

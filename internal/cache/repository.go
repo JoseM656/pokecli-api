@@ -3,7 +3,7 @@ package cache
 import (
 	"context"
 
-	"github.com/JoseM656/pokecli-api/internal/model"
+	"github.com/pokeservicies/pokeproxy/internal/model"
 )
 
 // Repository defines the cache operations for Pokemon data.
